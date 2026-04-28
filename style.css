@@ -1,0 +1,99 @@
+/* BACKGROUND */
+body {
+    background: linear-gradient(135deg, #e3f2fd, #f5f7fa);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* CONTAINER */
+.container-box {
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 25px;
+}
+
+/* CARD DESIGN */
+.card {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+/* HOVER EFFECT */
+.card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+/* BUTTONS */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: scale(1.02);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border: none;
+}
+
+.btn-success:hover {
+    transform: scale(1.02);
+}
+
+/* INPUTS */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* NAVBAR */
+.navbar {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* HEADINGS */
+h4, h5 {
+    font-weight: 600;
+}
+
+/* TABLE */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    display: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+#loginPage, #appPage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GlobalPay Pro</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+body {
+    background: linear-gradient(135deg,#eef2f7,#dde5f0);
+    font-family: 'Segoe UI';
+}
+
+#loginPage {
+    height: 100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.navbar {
+    position: fixed;
+    width:100%;
+    top:0;
+}
+
+.main {
+    margin-top:80px;
+    padding:20px;
+}
+
+.card {
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:0.2s;
+}
+.card:hover { transform: translateY(-3px); }
+
+.hero {
+    border-radius:18px;
+    padding:14px 18px;
+    color:white;
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+}
+
+.kpi { min-height:110px; }
+.spark { height:60px !important; }
+
+.page { display:none; }
+.page.active { display:block; }
+
+#qrcode { margin:auto; }
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+<div class="card p-4 text-center" style="width:320px;">
+<h3>🌍 GlobalPay</h3>
+<input id="username" class="form-control mt-3 mb-2" placeholder="Username">
+<input id="password" type="password" class="form-control mb-3" placeholder="Password">
+<button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+</div>
+
+<!-- APP -->
+<div id="appPage" style="display:none;">
+
+<nav class="navbar navbar-dark bg-dark px-3">
+<span class="navbar-brand">GlobalPay</span>
+
+<div>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('dashboard')">Dashboard</button>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('convert')">Convert</button>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('send')">Send</button>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('qr')">QR</button>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('history')">History</button>
+<button class="btn btn-outline-light btn-sm" onclick="showPage('settings')">Settings</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div>
+</nav>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page active">
+
+<div class="hero mb-3">
+<h4>Welcome to GlobalPay</h4>
+<div style="opacity:0.85; font-size:14px;">
+Your smart international payments dashboard
+</div>
+<h5 class="mt-2">Balance: ₹<span id="balance">50000</span></h5>
+</div>
+
+<div class="row mb-3">
+
+<div class="col-md-4">
+<div class="card p-2 kpi">
+<h6>Live Rate</h6>
+<p><b>1 USD = 94.26 INR</b></p>
+<canvas id="spark1" class="spark"></canvas>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-2 kpi">
+<h6>Trend</h6>
+<p style="color:green;"><b>Rising ↗</b></p>
+<canvas id="spark2" class="spark"></canvas>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-2 kpi">
+<h6>Suggestion</h6>
+<p><b>Convert USD → INR</b></p>
+<canvas id="spark3" class="spark"></canvas>
+</div>
+</div>
+
+</div>
+
+<div class="card p-3">
+<h6>Currency Trend (USD → INR)</h6>
+<canvas id="chart" style="max-height:300px;"></canvas>
+</div>
+
+</div>
+
+<!-- CONVERT -->
+<div id="convert" class="page">
+<div class="card p-3">
+<h5>Currency Converter</h5>
+
+<select id="from" class="form-control mb-2">
+<option>USD</option><option>INR</option><option>EUR</option>
+</select>
+
+<input id="amount" class="form-control mb-2" placeholder="Amount">
+
+<select id="to" class="form-control mb-2">
+<option>INR</option><option>USD</option><option>EUR</option>
+</select>
+
+<button class="btn btn-primary w-100" onclick="convert()">Convert</button>
+<p id="result"></p>
+</div>
+</div>
+
+<!-- SEND -->
+<div id="send" class="page">
+<div class="card p-3">
+<h5>Send Money</h5>
+
+<input id="receiver" class="form-control mb-2" placeholder="Receiver Name">
+<input id="account" class="form-control mb-2" placeholder="Account / UPI">
+<input id="sendAmount" class="form-control mb-2" placeholder="Amount">
+
+<select id="sendCurrency" class="form-control mb-2">
+<option>INR</option><option>USD</option><option>EUR</option>
+</select>
+
+<button class="btn btn-success w-100" onclick="sendMoney()">Send</button>
+<p id="sendResult"></p>
+</div>
+</div>
+
+<!-- QR -->
+<div id="qr" class="page">
+<div class="card p-3 text-center">
+<h5>Scan & Pay</h5>
+<div id="qrcode"></div>
+<input id="qrAmount" class="form-control mt-3 mb-2" placeholder="Enter Amount">
+<button class="btn btn-dark" onclick="generateQR()">Generate QR</button>
+<p class="text-muted mt-2">UPI: demo@upi</p>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div id="history" class="page">
+<div class="card p-3">
+<h5>Transaction History</h5>
+
+<table class="table table-bordered text-center">
+<thead>
+<tr>
+<th>Name</th><th>Account</th><th>Amount</th><th>Currency</th>
+</tr>
+</thead>
+<tbody id="historyTable"></tbody>
+</table>
+
+</div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="page">
+<div class="card p-3">
+<h5>Profile Settings</h5>
+
+<input id="name" class="form-control mb-2" value="KRUTIKA NAPHADE" disabled>
+<input id="email" class="form-control mb-2" value="krutika@email.com" disabled>
+<input id="phone" class="form-control mb-2" value="1234567890" disabled>
+<input id="bank" class="form-control mb-2" value="HDFC BANK" disabled>
+
+<button id="editBtn" class="btn btn-primary w-100" onclick="toggleEdit()">Edit</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+// LOGIN
+function login(){
+    if(username.value==="admin" && password.value==="1234"){
+        loginPage.style.display="none";
+        appPage.style.display="block";
+        loadChart();
+        loadSparks();
+    } else alert("Wrong credentials");
+}
+
+// NAV
+function showPage(id){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+// CONVERT
+function convert(){
+    let amt=parseFloat(amount.value||0);
+    let rates={
+        "USD_INR":83,"EUR_INR":90,
+        "INR_USD":1/83,"INR_EUR":1/90,
+        "USD_EUR":0.92,"EUR_USD":1.08
+    };
+    let key=from.value+"_"+to.value;
+    let res=(from.value===to.value)?amt:(rates[key]?amt*rates[key]:amt*83);
+    result.innerText=`${amt} ${from.value} = ${res.toFixed(2)} ${to.value}`;
+}
+
+// SEND
+function sendMoney(){
+    let name=receiver.value, acc=account.value;
+    let amt=parseFloat(sendAmount.value||0);
+    let cur=sendCurrency.value;
+
+    if(!name||!acc||!amt){ sendResult.innerText="Fill all"; return; }
+
+    let tax=(amt*0.02).toFixed(2);
+    let fee=(amt*0.01).toFixed(2);
+    let final=(amt-tax-fee).toFixed(2);
+
+    let bal=parseFloat(balance.innerText);
+    if(bal<amt){ sendResult.innerText="Insufficient balance"; return; }
+
+    balance.innerText=(bal-amt).toFixed(2);
+
+    sendResult.innerHTML=`Status: SUCCESS<br>Tax:${tax}<br>Fee:${fee}<br>Final:${final}`;
+
+    historyTable.innerHTML+=`
+    <tr><td>${name}</td><td>${acc}</td><td>${amt}</td><td>${cur}</td></tr>`;
+}
+
+// QR
+function generateQR(){
+    let amt=qrAmount.value||0;
+    qrcode.innerHTML="";
+    new QRCode(qrcode,{text:`upi://pay?pa=demo@upi&am=${amt}`,width:150,height:150});
+}
+
+// SETTINGS
+let edit=false;
+function toggleEdit(){
+    let inputs=document.querySelectorAll("#settings input");
+    edit=!edit;
+    inputs.forEach(i=>i.disabled=!edit);
+    editBtn.innerText=edit?"Save":"Edit";
+}
+
+// LOGOUT
+function logout(){ location.reload(); }
+
+// CHART
+function loadChart(){
+    new Chart(chart,{
+        type:'line',
+        data:{
+            labels:["Day1","Day2","Day3","Day4","Today"],
+            datasets:[{label:"USD → INR",data:[93,94,95,96,97],borderWidth:2,tension:0.4}]
+        }
+    });
+}
+
+// SPARK
+function spark(id,data){
+    new Chart(document.getElementById(id),{
+        type:'line',
+        data:{labels:data,datasets:[{data,borderWidth:2,pointRadius:0}]},
+        options:{plugins:{legend:false},scales:{x:{display:false},y:{display:false}}}
+    });
+}
+
+function loadSparks(){
+    spark("spark1",[93,94,94.2,94.26]);
+    spark("spark2",[94,95,96,97]);
+    spark("spark3",[93,94.5,95,97]);
+}
+
+</script>
+
+</body>
+</html>
