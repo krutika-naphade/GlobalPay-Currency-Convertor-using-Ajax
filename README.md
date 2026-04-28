@@ -31,3 +31,6 @@ GlobalPay is a web-based digital payment simulation system developed using **Jav
 2. Configure **Apache Tomcat Server**  
 3. Run the project on server  
 4. Open browser and go to:
+
+VIDEO LINK
+https://youtu.be/qEfm6wgxRCk
